@@ -46,8 +46,9 @@ public class Hello {
 
 
     @GetMapping("/")
-    public String hello(){
-        return "hello";
+    public String hello(Model model){
+        model.addAttribute("msg", "hello world");
+        return "home";
     }
 
 
