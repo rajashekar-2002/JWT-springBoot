@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -76,7 +77,7 @@ public class Hello {
 
 
     @PostMapping("/token")
-    public HttpEntity<String> login(@RequestBody Student student){
+    public ResponseEntity<?> login(@RequestBody Student student){
         // authentiacte using authentiacte maanger -> uses auth provider and save in authentication
         //create a bean of authentiacte manager and now we can hold object
 
@@ -84,9 +85,10 @@ public class Hello {
                                         .authenticate(new UsernamePasswordAuthenticationToken(
                                                 student.getName(), student.getPassword()));
         if(authentication.isAuthenticated()){
-            return jwtService.getToken(student.getName());
+            String token=jwtService.getToken(student.getName());
+            return ResponseEntity.ok(token);
         }else{
-            return new HttpEntity<>("failed");
+            return ResponseEntity.notFound().build();
         }
 
     }
