@@ -86,6 +86,7 @@ public class Hello {
                                                 student.getName(), student.getPassword()));
         if(authentication.isAuthenticated()){
             String token=jwtService.getToken(student.getName());
+            //paste token in jwt.io
             return ResponseEntity.ok(token);
         }else{
             return ResponseEntity.notFound().build();

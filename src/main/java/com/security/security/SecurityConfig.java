@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.security.security.service.MyUserDetailsService;
+
+import jakarta.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +31,10 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder(12);
   }
+
+
+  @Bean
+  public JwtFilter jwtFilter;
 
   // cerate own custom authprovider
   //must define a passwordencoder
@@ -79,7 +86,10 @@ public class SecurityConfig {
         //use stateless restfullapi
         //new  sessionid for all new request
         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      );
+        
+      )
+      //add jwt filter before userpassword auth filter
+      .addFilterBefore(jwtFilter,(Class<? extends Filter>) UsernamePasswordAuthenticationToken.class);
 
     return http.build();
   }

@@ -10,6 +10,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.management.RuntimeErrorException;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Jwts;
@@ -56,6 +57,16 @@ public class JwtService {
     private Key getKey() {
         byte[] keybytes=Decoders.BASE64.decode(seceretKey);
         return Keys.hmacShaKeyFor(keybytes);
+    }
+
+
+	public String extractUserName(String token) {
+        return "";
+	}
+
+
+    public boolean validateToken(String token, UserDetails userdetails) {
+        return true;
     }
     
 }
