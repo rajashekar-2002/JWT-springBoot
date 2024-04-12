@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.security.security.entity.Student;
 import com.security.security.repo.StudentRepo;
+import com.security.security.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -30,6 +32,9 @@ public class Hello {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtService jwtService;
 
 
     private List<Student> students=new ArrayList<>(List.of(
@@ -47,10 +52,10 @@ public class Hello {
 
 
     @PostMapping("/add")
-    public List<Student> add(@RequestBody Student student){
+    public HttpEntity<?> add(@RequestBody Student student){
         student.setPassword(passwordEncoder.encode(student.getPassword()));
-        students.add(student);
-        return students;
+        studentRepo.save(student);
+        return new HttpEntity<>(student);
     }
 
     @GetMapping("/getCsrf")
@@ -59,9 +64,9 @@ public class Hello {
     }
 
     @GetMapping("/all")
-    public String add(Model model){
-        model.addAttribute("msg", students);
-        return "home";
+    public HttpEntity<?> all(Model model){
+        List<Student> list=studentRepo.findAll();
+        return new HttpEntity<>(list);
     }
 
     @GetMapping("/login")
@@ -70,8 +75,8 @@ public class Hello {
     }
 
 
-    @PostMapping("/login")
-    public String login(@RequestBody Student student){
+    @PostMapping("/token")
+    public HttpEntity<String> login(@RequestBody Student student){
         // authentiacte using authentiacte maanger -> uses auth provider and save in authentication
         //create a bean of authentiacte manager and now we can hold object
 
@@ -79,9 +84,9 @@ public class Hello {
                                         .authenticate(new UsernamePasswordAuthenticationToken(
                                                 student.getName(), student.getPassword()));
         if(authentication.isAuthenticated()){
-            return "pass";
+            return jwtService.getToken(student.getName());
         }else{
-            return "failed";
+            return new HttpEntity<>("failed");
         }
 
     }

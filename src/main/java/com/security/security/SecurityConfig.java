@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -53,7 +54,7 @@ public class SecurityConfig {
       .authorizeHttpRequests(request ->
         request
           //permit these path for all user
-          .requestMatchers("/all")
+          .requestMatchers("/all","/token")
           .permitAll()
           //authenticate for all paths
           .anyRequest()
@@ -67,7 +68,7 @@ public class SecurityConfig {
       .formLogin(formLogin ->
         formLogin
           .loginPage("/login")
-AuthenticationManager          .loginProcessingUrl("/login")
+        .loginProcessingUrl("/login")
           .defaultSuccessUrl("/all", true)
           .permitAll()
       //   // .failureUrl("login?error=true")
